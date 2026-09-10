@@ -5,7 +5,9 @@ import "dotenv/config";
 const app = express();
 import jobRoutes from "./routes/jobRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import dns from "dns";
 
+dns.setDefaultResultOrder("ipv4first");
 app.use(express.json());
 app.use(cors());
 app.use("/jobs",jobRoutes);
