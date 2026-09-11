@@ -16,15 +16,19 @@ function Dashboard() {
       }
 
       const response = await fetch(`${API_URL}/jobs`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
 
-      const data = await response.json();
-      setJobs(data);
-    };
+if (response.status === 401) {
+  localStorage.removeItem("token");
+  navigate("/login");
+  return;
+}
 
+const data = await response.json();
+setJobs(data);}
     getJobs();
   }, [navigate]);
 
