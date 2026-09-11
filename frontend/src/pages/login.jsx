@@ -6,7 +6,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
   const response = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
@@ -20,6 +20,11 @@ function Login() {
   });
 
   const data = await response.json();
+
+  if (!response.ok) {
+    console.log("Login failed:", data.message);
+    return;
+  }
 
   localStorage.setItem("token", data.token);
 
