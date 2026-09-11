@@ -9,7 +9,7 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // We'll connect the backend here
+    
 
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
