@@ -45,24 +45,27 @@ export const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (!user) {
-      return res.status(401).json({
-        message: "Invalid email or password"
-      });
-    }
-    console.log("EMAIL:", email);
-console.log("PASSWORD RECEIVED:", password);
-console.log("HASH:", user.password);
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+if (!user) {
+  console.log("LOGIN: USER NOT FOUND", email);
 
-    if (!isPasswordCorrect) {
-      return res.status(401).json({
-        message: "Invalid email or password"
-      });
-    }
+  return res.status(401).json({
+    message: "Invalid email or password"
+  });
+}
+
+const isPasswordCorrect = await bcrypt.compare(
+  password,
+  user.password
+);
+
+console.log("LOGIN: USER FOUND");
+console.log("LOGIN: PASSWORD MATCH:", isPasswordCorrect);
+
+if (!isPasswordCorrect) {
+  return res.status(401).json({
+    message: "Invalid email or password"
+  });
+}
 
     const token = jwt.sign(
   { userId: user._id },
