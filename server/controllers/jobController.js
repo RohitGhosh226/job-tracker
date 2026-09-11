@@ -4,14 +4,22 @@ const createJob = async (req, res) => {
   try {
     const { company, role, status, location, workingHours, post, salary } = req.body;
 
+    if (!company?.trim() || !role?.trim() || !location?.trim()) {
+      return res.status(400).json({
+        message: "Company, role, and location are required"
+      });
+    }
+
     const job = await Job.create({
-      company,
-      role,
+      company: company.trim(),
+      role: role.trim(),
       status,
-      location,
-      workingHours,
-      post,
-      salary,
+      location: location.trim(),
+      workingHours: workingHours?.trim() || undefined,
+      post: post?.trim() || undefined,
+      salary: salary === "" || salary === null || salary === undefined
+        ? undefined
+        : Number(salary),
       user: req.user
     });
 
@@ -19,34 +27,33 @@ const createJob = async (req, res) => {
       message: "Job created successfully",
       job
     });
-
   } catch (error) {
+    console.error("CREATE JOB ERROR:", error);
     res.status(500).json({
       message: "Failed to create job",
       error: error.message
     });
   }
 };
-const getJobs = async(req, res)=>{
-  try{
-    const jobs = await Job.find({ user: req.user }) ;
-    res.status(200).json(jobs);
-} catch(error){
-  res.status(500).json({
-    message: "failed to fetch jobs",
-    error: error.message 
-  });
-}
-};
 
+const getJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find({ user: req.user }).sort({ appliedDate: -1 });
+    res.status(200).json(jobs);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch jobs",
+      error: error.message
+    });
+  }
+};
 
 const getJob = async (req, res) => {
   try {
-  
     const job = await Job.findOne({
-  _id: req.params.id,
-  user: req.user
-});
+      _id: req.params.id,
+      user: req.user
+    });
 
     if (!job) {
       return res.status(404).json({
@@ -63,7 +70,7 @@ const getJob = async (req, res) => {
   }
 };
 
- const updateJob = async (req, res) => {
+const updateJob = async (req, res) => {
   try {
     const job = await Job.findOneAndUpdate(
       {
@@ -84,14 +91,12 @@ const getJob = async (req, res) => {
     }
 
     res.status(200).json(job);
-
   } catch (error) {
     res.status(500).json({
       message: error.message
     });
   }
 };
-
 
 const deleteJob = async (req, res) => {
   try {
@@ -109,7 +114,6 @@ const deleteJob = async (req, res) => {
     res.status(200).json({
       message: "Job deleted successfully"
     });
-
   } catch (error) {
     res.status(500).json({
       message: error.message
@@ -117,6 +121,4 @@ const deleteJob = async (req, res) => {
   }
 };
 
-export { createJob,
-  getJobs, getJob, updateJob, deleteJob 
- };
+export { createJob, getJobs, getJob, updateJob, deleteJob };

@@ -11,13 +11,29 @@ function Jobs() {
   const getJobs = async () => {
     const token = localStorage.getItem("token");
 
+    if (!token) {
+      window.location.href = "/login";
+      return;
+    }
+
     const response = await fetch(`${API_URL}/jobs`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      return;
+    }
+
     const data = await response.json();
+
+    if (!response.ok) {
+      console.log("Fetch jobs failed:", data.message);
+      return;
+    }
 
     setJobs(data);
   };
@@ -35,6 +51,12 @@ function Jobs() {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+      return;
+    }
 
     if (response.ok) {
       setJobs((currentJobs) =>
@@ -75,7 +97,8 @@ function Jobs() {
         <option value="Applied">Applied</option>
         <option value="Interview">Interview</option>
         <option value="Rejected">Rejected</option>
-        <option value="Selected">Selected</option>
+        <option value="Offer">Offer</option>
+        <option value="Withdrawn">Withdrawn</option>
       </select>
 
       {filteredJobs.length === 0 ? (

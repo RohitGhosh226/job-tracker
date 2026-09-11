@@ -9,9 +9,8 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    
-
-  const response = await fetch(`${API_URL}/auth/register`, {
+    try {
+      const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -21,11 +20,19 @@ function Register() {
       email,
       password,
     }),
-  });
+      });
 
-  const data = await response.json();
+      const data = await response.json();
 
-  console.log(data);
+      if (!response.ok) {
+        console.log("Registration failed:", data.message);
+        return;
+      }
+
+      console.log("Registration successful:", data.message);
+    } catch (error) {
+      console.log("Registration request failed:", error.message);
+    }
   };
 
   return (

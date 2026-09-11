@@ -89,6 +89,12 @@ function EditJob() {
 
       const data = await response.json();
 
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(data.message || "Failed to update job");
       }
@@ -135,7 +141,8 @@ function EditJob() {
           <option value="Applied">Applied</option>
           <option value="Interview">Interview</option>
           <option value="Rejected">Rejected</option>
-          <option value="Selected">Selected</option>
+          <option value="Offer">Offer</option>
+          <option value="Withdrawn">Withdrawn</option>
         </select>
 
         <input

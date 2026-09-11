@@ -28,18 +28,41 @@ function AddJob() {
 
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`${API_URL}/jobs`, {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/jobs`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        salary: formData.salary === "" ? undefined : Number(formData.salary),
+      }),
     });
 
     const data = await response.json();
 
-    navigate("/jobs");
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+        return;
+      }
+
+      if (!response.ok) {
+        console.log("Create job failed:", data.message);
+        return;
+      }
+
+      navigate("/jobs");
+    } catch (error) {
+      console.log("Create job request failed:", error.message);
+    }
   };
 
     return (
@@ -50,6 +73,7 @@ function AddJob() {
       <input
         name="company"
         placeholder="Company"
+        required
         value={formData.company}
         onChange={handleChange}
       />
@@ -57,6 +81,7 @@ function AddJob() {
       <input
         name="role"
         placeholder="Role"
+        required
         value={formData.role}
         onChange={handleChange}
       />
@@ -83,6 +108,7 @@ function AddJob() {
       <input
         name="location"
         placeholder="Location"
+        required
         value={formData.location}
         onChange={handleChange}
       />

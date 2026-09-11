@@ -17,7 +17,6 @@ import jwt from "jsonwebtoken";
       token,
       process.env.JWT_SECRET
     );
-    console.log(decoded);
 
     req.user = decoded.userId;
 
