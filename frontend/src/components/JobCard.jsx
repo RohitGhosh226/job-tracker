@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 function JobCard({ job, onDelete }) {
+  const navigate = useNavigate();
+
   return (
     <div className="job-card">
       <div className="job-card-header">
@@ -18,7 +22,7 @@ function JobCard({ job, onDelete }) {
       </div>
 
       <div className="job-actions">
-        <button onClick={() => window.location.href = `/edit-job/${job._id}`}>
+        <button onClick={() => navigate(`/edit-job/${job._id}`)}>
           Edit
         </button>
 
